@@ -1,0 +1,5 @@
+# Dependencias del cliente de datos de YouTube.
+# Instalar:  python -m pip install -r requirements.txt
+
+requests>=2.31,<3          # cliente HTTP
+truststore>=0.8            # Windows: confiar en el almacen de certificados del SO
