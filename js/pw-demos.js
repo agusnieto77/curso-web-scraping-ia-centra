@@ -134,19 +134,35 @@ PY.scene({
   ]
 });
 
-/* Diapositiva 7 · Alternativas a Playwright con Chromium. */
-PY.scene({
+/* Diapositiva 7 · Del navegador común a los navegadores para agentes. */
+PY.pane({
   selector: '.pwtools',
-  gap: 900,
-  itemSteps: [2, 4, 5],
-  notes: [
-    'Cuatro preguntas por herramienta: motor, forma de control y uso adecuado.',
-    'Playwright: biblioteca y base de varias de las demás.',
-    'OpenCode Browse: MCP y extensión sobre tu navegador; te devuelve la pestaña para login o 2FA.',
-    'ego lite: Chromium modificado; el agente envía un script con varias acciones por llamada.',
-    'Lightpanda: motor propio sin render. Habla CDP, de modo que Playwright puede conectarse.',
-    'Browser Use y Stagehand: el modelo decide durante la ejecución.',
-    'Las cifras de rendimiento son de cada proveedor: medir con el sitio propio antes de cambiar.'
+  gap: 850,
+  steps: [
+    {
+      notes: [
+        'Chrome, Edge, Firefox o Safari: ventana, pestañas, extensiones y perfil con logins.',
+        'Ese perfil da alcance y riesgo: solo cuentas propias o autorizadas, sin sortear CAPTCHA.',
+        'Automatizarlo es un añadido (CDP) y renderiza aunque nadie mire: pesado a escala.'
+      ],
+      verdict: ['!', 'Sirve para explorar con tu sesión; no para recolectar a escala.', 'diff']
+    },
+    {
+      notes: [
+        'Chromium es el proyecto open source; el navegador de cada día añade sincronización y servicios.',
+        'Playwright lo lanza headless con perfil limpio: sin tus logins, la sesión se lleva aparte.',
+        'Playwright es biblioteca, no navegador: maneja Chromium, Firefox y WebKit con script, MCP o CLI.'
+      ],
+      verdict: ['✓', 'El motor que usan casi todas las demás herramientas.', 'same']
+    },
+    {
+      notes: [
+        'OpenCode Browse trabaja sobre tu Chrome, Edge o Brave y te devuelve la pestaña para login o 2FA.',
+        'ego lite modifica Chromium: Spaces en paralelo, Snapshot de 200–400 tokens y varias acciones por llamada.',
+        'Lightpanda reemplaza el motor (Zig, sin render): ~9×/16× según su proveedor; sin ventana ni perfil personal.'
+      ],
+      verdict: ['!', 'Elegir por sesión, motor y control; medir con el sitio propio antes de cambiar.', 'diff']
+    }
   ]
 });
 

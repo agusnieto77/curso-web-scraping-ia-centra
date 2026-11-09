@@ -86,8 +86,5 @@
 /* Clase 05 · Playwright, agentes y navegadores para IA */
 .inspect.pwflow{grid-template-columns:minmax(0,.7fr) minmax(0,1.5fr)}
 .pwview .rb-row{white-space:pre}
-.robust.pwtools{grid-template-columns:minmax(0,.75fr) minmax(0,1.6fr)}
-.pwtools .py-log{font-size:13px}
-.pwtools .py-log .dt-row{grid-template-columns:.9fr 1fr 1.5fr 1fr}
-.pwtools .py-log .st-tool,.pwtools .py-log .st-cost{font-size:13px}
+/* (pwtools usa paneles .rd.rb; sin reglas propias de tabla) */
 .pwtools .editorial-list li{padding:10px 0}
