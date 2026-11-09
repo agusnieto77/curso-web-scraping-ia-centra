@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Clase 04 · Scraping con Python y captura seriada · CENTRA</title><link rel="stylesheet" href="css/styles.css"><script src="js/app.js" defer></script><script src="js/py-engine.js" defer></script><script src="js/py-flow-demo.js" defer></script><script src="js/py-pane-demos.js" defer></script><script src="js/py-scene-demos.js" defer></script><script src="js/py-error-demo.js" defer></script></head>
+<body><header class="masthead"><a class="brand" href="index.html" data-campus="https://formacion.centrodeestudiosandaluces.es/course/section.php?id=1327" aria-label="Volver al índice de las ocho clases">Web Scraping · Asistido por IA</a><span class="meta">CENTRA · Sesión 04 · 26 oct 2026</span></header>
+<main>
+<section class="slide cover active" aria-label="Diapositiva 1 de 9">
+<span class="slide-number">01 / 09</span><p class="eyebrow">Clase 04 · 26 oct 2026</p>
+<h1>Scraping con Python y <em>captura seriada</em></h1><p class="lead">Construir un script reutilizable que recorra páginas y registre resultados y errores.</p>
+<div class="cover-footer"><div><span class="label">Docente</span>Agustín Nieto</div></div>
+</section>
+<section class="slide" hidden aria-label="Diapositiva 2 de 9">
+<span class="slide-number">02 / 09</span><p class="eyebrow">Concepto central · 01</p>
+<h2>Tres bibliotecas, <em>un flujo</em></h2><p class="lead">Separar transporte, interpretación y estructura de datos.</p>
+<div class="inspect pyflow">
+<ul class="editorial-list"><li><span class="bullet">01</span><div><strong>Requests.</strong> Descargar la respuesta HTTP y comprobar su estado.</div></li><li><span class="bullet">02</span><div><strong>BeautifulSoup.</strong> Interpretar el HTML recibido y seleccionar nodos.</div></li><li><span class="bullet">03</span><div><strong>pandas.</strong> Organizar registros, validar columnas y exportar.</div></li></ul>
+<div class="py-console-wrap" aria-label="Consola de Python: requests, BeautifulSoup y pandas"><div class="dt-tabs py-tabs"><button type="button" class="dt-tab" aria-selected="true">requests</button><button type="button" class="dt-tab" aria-selected="false">bs4</button><button type="button" class="dt-tab" aria-selected="false">pandas</button><button type="button" class="dt-replay" aria-label="Repetir animación">↻</button></div><div class="py-console" aria-live="polite"></div><p class="dt-note"></p></div>
+</div>
+</section>
+<section class="slide" hidden aria-label="Diapositiva 3 de 9">
+<span class="slide-number">03 / 09</span><p class="eyebrow">Concepto central · 02</p>
+<h2>Una respuesta 200 <em>no garantiza datos</em></h2><p class="lead">Una descarga exitosa puede devolver una pantalla de acceso o una página sin resultados.</p>
+<div class="compare pycheck">
+<ul class="editorial-list"><li><span class="bullet">01</span><div><strong>Solicitud.</strong> Usar timeout y revisar el estado HTTP con raise_for_status().</div></li><li><span class="bullet">02</span><div><strong>Contenido.</strong> Verificar tipo de respuesta y presencia de los nodos esperados.</div></li><li><span class="bullet">03</span><div><strong>Acceso.</strong> Ante 401, 403 o CAPTCHA, detener y evaluar permisos; no intentar eludirlos.</div></li></ul>
+<div class="rd rb" aria-label="Comprobaciones sobre una respuesta HTTP"><div class="rd-tabs rb-tabs"><span>requests.get(url) · 200 OK</span><button type="button" class="dt-replay rb-replay" aria-label="Repetir animación">↻</button></div><div class="rb-body">
+<div class="rb-pane rb-checks"><div class="rd-check" data-at="0"><span class="rd-tool">requests</span><span>GET /andalucia.html · timeout=10</span><strong class="is-ok">200 ✓</strong></div><div class="rd-check" data-at="1"><span class="rd-tool">estado</span><span>raise_for_status()</span><strong class="is-ok">sin error</strong></div><div class="rd-check" data-at="2"><span class="rd-tool">cuerpo</span><span>len(r.text)</span><strong>18 402 bytes</strong></div></div>
+<div class="rb-pane rb-checks" hidden><div class="rd-check" data-at="0"><span class="rd-tool">estado</span><span>200 OK</span><strong class="is-ok">correcto</strong></div><div class="rd-check" data-at="1"><span class="rd-tool">tipo</span><span>Content-Type: text/html</span><strong class="is-ok">esperado</strong></div><div class="rd-check" data-at="2"><span class="rd-tool">nodos</span><span>soup.select("article")</span><strong>0 elementos ✗</strong></div></div>
+<div class="rb-pane rb-checks" hidden><div class="rd-check" data-at="0"><span class="rd-tool">cuerpo</span><span>«Acceso restringido · resuelve el CAPTCHA»</span><strong>presente ✗</strong></div><div class="rd-check" data-at="1"><span class="rd-tool">decisión</span><span>401, 403 o CAPTCHA</span><strong>detener</strong></div><div class="rd-check" data-at="2"><span class="rd-tool">log</span><span>el intento queda anotado</span><strong class="is-ok">registrado ✓</strong></div></div>
+</div><div class="rd-verdict"><span class="rd-sign"></span><span class="rd-text" aria-live="polite"></span></div><p class="dt-note"></p></div>
+</div>
+</section>
+<section class="slide" hidden aria-label="Diapositiva 4 de 9">
+<span class="slide-number">04 / 09</span><p class="eyebrow">Concepto central · 03</p>
+<h2>De nodos a <em>registros</em></h2><p class="lead">BeautifulSoup permite seleccionar con CSS y leer texto y atributos dentro de cada contenedor.</p>
+<div class="compare pyrecord">
+<ul class="editorial-list"><li><span class="bullet">01</span><div><strong>Contenedores.</strong> soup.select("article") define las unidades.</div></li><li><span class="bullet">02</span><div><strong>Campos.</strong> select_one(), get_text() y get("href") recuperan valores; comprobar None.</div></li><li><span class="bullet">03</span><div><strong>Estructura.</strong> Acumular diccionarios con las mismas claves y crear un DataFrame.</div></li></ul>
+<div class="rd rb py-tall" aria-label="De contenedores a registros en Python"><div class="rd-tabs rb-tabs"><span>soup.select("article") → registros</span><button type="button" class="dt-replay rb-replay" aria-label="Repetir animación">↻</button></div><div class="rb-body">
+<div class="rb-pane"><div class="rb-recs"><span class="rb-rec" data-at="1"><b>A</b>article</span><span class="rb-rec" data-at="2"><b>B</b>article</span><span class="rb-rec" data-at="3"><b>C</b>article</span></div><div class="rb-row" data-at="3">soup.select("article") → 12 contenedores</div></div>
+<div class="rb-pane" hidden><div class="rb-col"><span class="rb-th" data-at="0">dentro de article B</span><span class="rb-row" data-at="1">h2 → "Segunda noticia"</span><span class="rb-row" data-at="2">a → "/andalucia/b.html"</span><span class="rb-row rb-na" data-at="3">time → None</span></div></div>
+<div class="rb-pane" hidden><div class="rb-two"><div class="rb-col"><span class="rb-th" data-at="0">zip(títulos, fechas)</span><span class="rb-row" data-at="1">1 · A · 18 oct</span><span class="rb-row rb-wrong" data-at="2">2 · B ← 16 oct (de C)</span><span class="rb-row" data-at="3">3 · C ← —</span></div><div class="rb-col"><span class="rb-th" data-at="4">un dict por article</span><span class="rb-row" data-at="5">A · 18 oct</span><span class="rb-row rb-na" data-at="5">B · None</span><span class="rb-row" data-at="5">C · 16 oct</span></div></div></div>
+</div><div class="rd-verdict"><span class="rd-sign"></span><span class="rd-text" aria-live="polite"></span></div><p class="dt-note"></p></div>
+</div>
+</section>
+<section class="slide" hidden aria-label="Diapositiva 5 de 9">
+<span class="slide-number">05 / 09</span><p class="eyebrow">Concepto central · 04</p>
+<h2>Paginación: avanzar <em>con un límite</em></h2><p class="lead">El recorrido debe tener una condición de salida explícita.</p>
+<div class="py-split pypage">
+<ul class="editorial-list"><li><span class="bullet">01</span><div><strong>Número de página.</strong> Cambiar el parámetro observado; no inventar una URL sin comprobarla.</div></li><li><span class="bullet">02</span><div><strong>Siguiente.</strong> Seguir el enlace y resolver rutas relativas con urljoin().</div></li><li><span class="bullet">03</span><div><strong>Detención.</strong> Finalizar sin siguiente, al repetir URL o al alcanzar el máximo permitido.</div></li></ul>
+<div class="py-scene-wrap">
+<svg class="py-scene" viewBox="0 0 620 200" role="img" aria-label="Recorrido de tres páginas con tres condiciones de parada">
+<g data-at="0"><rect class="box" x="16" y="54" width="120" height="56"/><text class="mid" x="76" y="80">pág 1</text><text class="muted mid" x="76" y="98">12 artículos</text></g>
+<g data-at="1"><path class="arrow" d="M140 82 H156"/><path class="arrow" d="M150 76 L158 82 L150 88"/><rect class="box" x="164" y="54" width="120" height="56"/><text class="mid" x="224" y="80">pág 2</text><text class="muted mid" x="224" y="98">12 artículos</text></g>
+<g data-at="2"><path class="arrow" d="M288 82 H304"/><path class="arrow" d="M298 76 L306 82 L298 88"/><rect class="box" x="312" y="54" width="120" height="56"/><text class="mid" x="372" y="80">pág 3</text><text class="muted mid" x="372" y="98">12 artículos</text></g>
+<text class="label" x="444" y="28">Paradas</text>
+<g data-at="3"><text class="acc" x="16" y="140">fin del recorrido: sin enlace «Siguiente»</text><rect class="box" x="444" y="38" width="160" height="24"/><text x="452" y="54">a · sin «Siguiente»</text></g>
+<g data-at="4"><rect class="box" x="444" y="70" width="160" height="24"/><text x="452" y="86">b · URL repetida</text></g>
+<g data-at="5"><rect class="box" x="444" y="102" width="160" height="24"/><text x="452" y="118">c · MAX_PAGINAS = 3</text></g>
+<g data-at="6"><text class="muted" x="16" y="172">vistas = 3 · registros = 36</text></g>
+</svg>
+<p class="py-code">while url and url not in vistas and len(vistas) &lt; MAX_PAGINAS:</p>
+<div class="st-foot"><span class="st-tool">MAX_PAGINAS = 3</span><span class="st-cost">condición de salida explícita</span><button type="button" class="st-replay" aria-label="Repetir animación">↻</button></div>
+<p class="dt-note"></p>
+</div>
+</div>
+</section>
+<section class="slide" hidden aria-label="Diapositiva 6 de 9">
+<span class="slide-number">06 / 09</span><p class="eyebrow">Concepto central · 05</p>
+<h2>Un script <em>que se pueda repetir</em></h2><p class="lead">Separar parámetros de la lógica evita editar código para cada ejecución.</p>
+<div class="py-split pyscript">
+<ul class="editorial-list"><li><span class="bullet">01</span><div><strong>Configurar.</strong> Fuente, límite de páginas, pausa y ruta de salida.</div></li><li><span class="bullet">02</span><div><strong>Funciones.</strong> Descargar → parsear página → validar registros → guardar.</div></li><li><span class="bullet">03</span><div><strong>Repetibilidad.</strong> Fijar dependencias y conservar configuración y fecha de ejecución.</div></li></ul>
+<div class="py-scene-wrap">
+<svg class="py-scene" viewBox="0 0 620 210" role="img" aria-label="Configuración, funciones y salidas de un script reutilizable">
+<g data-at="0"><text class="label" x="16" y="22">Configuración</text><rect class="box" x="16" y="32" width="168" height="26"/><text x="26" y="49">url = /andalucia</text><rect class="box" x="16" y="66" width="168" height="26"/><text x="26" y="83">max_paginas = 3</text><rect class="box" x="16" y="100" width="168" height="26"/><text x="26" y="117">pausa = 1.0 s</text><rect class="box" x="16" y="134" width="168" height="26"/><text x="26" y="151">salida = noticias.csv</text></g>
+<g data-at="1"><path class="arrow" d="M188 90 H208"/><path class="arrow" d="M202 84 L210 90 L202 96"/><rect class="box" x="216" y="32" width="168" height="28"/><text x="226" y="50">descargar(url)</text></g>
+<g data-at="2"><rect class="box" x="216" y="68" width="168" height="28"/><text x="226" y="86">parsear(html)</text></g>
+<g data-at="3"><rect class="box" x="216" y="104" width="168" height="28"/><text x="226" y="122">validar(filas)</text></g>
+<g data-at="4"><rect class="box" x="216" y="140" width="168" height="28"/><text x="226" y="158">guardar(df)</text></g>
+<g data-at="5"><path class="arrow" d="M388 90 H408"/><path class="arrow" d="M402 84 L410 90 L402 96"/><rect class="box" x="416" y="46" width="188" height="28"/><text x="426" y="64">noticias.csv</text><rect class="box" x="416" y="86" width="188" height="28"/><text x="426" y="104">errores.log</text><text class="muted" x="416" y="132">18 filas · 3 avisos</text></g>
+<g data-at="6"><rect class="box" x="16" y="178" width="588" height="24"/><text x="26" y="195">python scraper.py --config noticias.json</text></g>
+</svg>
+<div class="st-foot"><span class="st-tool">scraper.py</span><span class="st-cost">configuración y fecha de ejecución</span><button type="button" class="st-replay" aria-label="Repetir animación">↻</button></div>
+<p class="dt-note"></p>
+</div>
+</div>
+</section>
+<section class="slide" hidden aria-label="Diapositiva 7 de 9">
+<span class="slide-number">07 / 09</span><p class="eyebrow">Concepto central · 06</p>
+<h2>Errores visibles, <em>no filas inventadas</em></h2><p class="lead">Un fallo de descarga y un campo ausente son problemas distintos.</p>
+<div class="robust pyerror">
+<ul class="editorial-list"><li><span class="bullet">01</span><div><strong>Registro.</strong> Guardar URL, etapa, estado HTTP y mensaje del error.</div></li><li><span class="bullet">02</span><div><strong>Ritmo.</strong> Aplicar pausas y límites; ante 429, detener o respetar Retry-After.</div></li><li><span class="bullet">03</span><div><strong>Conservación.</strong> Guardar resultados válidos y registrar qué quedó sin capturar.</div></li></ul>
+<div class="py-log-wrap">
+<div class="py-log"><div class="dt-row dt-head"><span>url</span><span>etapa</span><span>estado</span><span>mensaje</span></div><div class="dt-row" data-at="1"><span>/andalucia/pag3</span><span>descargar</span><span>—</span><span>ConnectTimeout tras 10 s</span></div><div class="dt-row" data-at="2"><span>/andalucia/pag4</span><span>descargar</span><span>429</span><span>Retry-After: 120 s → detener</span></div><div class="dt-row" data-at="3"><span>/andalucia/pag5</span><span>parsear</span><span>200</span><span>0 articles: estructura distinta</span></div><div class="st-foot"><span class="st-tool" data-at="4">resultados.csv · 18 filas válidas</span><span class="st-cost" data-at="5">3 páginas sin capturar · 0 filas inventadas</span><button type="button" class="st-replay" aria-label="Repetir animación">↻</button></div></div>
+<p class="dt-note"></p>
+</div>
+</div>
+</section>
+<section class="slide" hidden aria-label="Diapositiva 8 de 9">
+<span class="slide-number">08 / 09</span><p class="eyebrow">Concepto central · 07</p>
+<h2>Validación <em>antes del archivo final</em></h2><p class="lead">El CSV es un resultado, no una prueba de calidad.</p>
+<div class="robust pyvalid">
+<ul class="editorial-list"><li><span class="bullet">01</span><div><strong>Consistencia.</strong> Claves únicas, columnas esperadas y tipos revisados.</div></li><li><span class="bullet">02</span><div><strong>Cobertura.</strong> Comparar páginas previstas, visitadas y fallidas.</div></li><li><span class="bullet">03</span><div><strong>IA.</strong> Pedir ayuda con un HTML mínimo y el error real; comprobar la solución con la fuente.</div></li></ul>
+<div class="rd rb" aria-label="Controles antes de to_csv"><div class="rd-tabs rb-tabs"><span>Antes de to_csv()</span><button type="button" class="dt-replay rb-replay" aria-label="Repetir animación">↻</button></div><div class="rb-body">
+<div class="rb-pane rb-checks"><div class="rd-check" data-at="0"><span class="rd-tool">Columnas</span><span>título, url, fecha</span><strong class="is-ok">3 ✓</strong></div><div class="rd-check" data-at="1"><span class="rd-tool">Claves</span><span>URL duplicada</span><strong class="is-ok">0 ✓</strong></div><div class="rd-check" data-at="2"><span class="rd-tool">Tipos</span><span>fecha no parseable</span><strong>1 fila ⚠</strong></div></div>
+<div class="rb-pane rb-checks" hidden><div class="rd-check" data-at="0"><span class="rd-tool">Previstas</span><span>páginas del listado</span><strong>5</strong></div><div class="rd-check" data-at="1"><span class="rd-tool">Visitadas</span><span>descargadas con éxito</span><strong>4</strong></div><div class="rd-check" data-at="2"><span class="rd-tool">Fallidas</span><span>1 página · en el log</span><strong>1 ⚠</strong></div></div>
+<div class="rb-pane rb-checks" hidden><div class="rd-check" data-at="0"><span class="rd-tool">Archivo</span><span>andalucia.csv</span><strong>18 filas · 3 columnas</strong></div><div class="rd-check" data-at="1"><span class="rd-tool">Trazabilidad</span><span>fuente y fecha de captura</span><strong class="is-ok">columna ✓</strong></div></div>
+</div><div class="rd-verdict"><span class="rd-sign"></span><span class="rd-text" aria-live="polite"></span></div><p class="dt-note"></p></div>
+</div>
+</section>
+<section class="slide" hidden aria-label="Diapositiva 9 de 9">
+<span class="slide-number">09 / 09</span><p class="eyebrow">IA · pedido de ejemplo</p>
+<h2>IA en Python: <em>explicar, probar, corregir</em></h2>
+<p class="lead">Trabajar en pasos pequeños y llevar a la IA errores observados, no solo el resultado deseado.</p>
+<blockquote class="prompt">Analiza https://www.elmundo.es/andalucia.html. El enlace «Siguiente» continúa en https://www.elmundo.es/andalucia/pag2. Te pego un <code>article.ue-c-cover-content</code> copiado desde DevTools. Propón un flujo en Python con requests, BeautifulSoup y pandas: una fila por <code>article</code>, no por cada <code>a</code>. Extrae título con <code>get_text(strip=True)</code> de <code>h2.ue-c-cover-content__headline</code>; URL con <code>get("href")</code> de <code>a.ue-c-cover-content__link</code> y resuélvela con <code>urljoin()</code>; antetítulo <code>span.ue-c-cover-content__kicker</code>; fecha con <code>get("data-publish")</code> de <code>div.ue-c-cover-content__published-date</code>, que llega vacío. Ignora <code>a.ue-c-cover-content__link-whole-content</code> y los <code>href</code> con <code>#ancla_comentarios</code>. No hay <code>time</code>: no lo inventes. Si falta el kicker, conserva <code>None</code>. Añade <code>timeout</code>, un límite de páginas, un log de errores y la validación de columnas antes de <code>to_csv()</code>. Explica cada paso. Cierra contrastando cinco filas con la página: mismo número de <code>article</code>, cero URL relativas y fechas leídas del atributo, no del texto.</blockquote>
+</section>
+</main>
+<nav class="nav" aria-label="Navegación de diapositivas"><div class="controls"><button id="prev" aria-label="Diapositiva anterior">←</button><button id="next" aria-label="Diapositiva siguiente">→</button></div><div class="progress"><span id="counter" aria-live="polite">01 / 09</span><progress value="1" max="9" aria-label="Avance de la presentación"></progress></div></nav>
+</body></html>
