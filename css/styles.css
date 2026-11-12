@@ -88,3 +88,9 @@
 .pwview .rb-row{white-space:pre}
 /* (pwtools usa paneles .rd.rb; sin reglas propias de tabla) */
 .pwtools .editorial-list li{padding:10px 0}
+.frag{border:1px solid var(--line);background:#fafafa;padding:12px 18px;margin-top:14px;font-size:14.5px}
+.frag p{margin:6px 0}
+.frag-kicker{font:600 11px var(--sans);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.frag-kicker a{color:var(--accent)}
+.frag-meta{color:var(--muted);font-size:13px}
+@media print{.frag{break-inside:avoid}}
